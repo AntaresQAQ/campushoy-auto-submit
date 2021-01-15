@@ -13,6 +13,7 @@ class FuckCaptcha {
   }
 
   async capreg(image) {
+    logger.info("开始识别验证码");
     const timestamp = Math.ceil(Date.now() / 1000);
     const body = qs.stringify({
       user_id: this.pd_id,
@@ -37,6 +38,7 @@ class FuckCaptcha {
   }
 
   async capjust(request_id) {
+    logger.debug("Sending Capjust Request...");
     const timestamp = Math.ceil(Date.now() / 1000);
     const body = qs.stringify({
       user_id: this.pd_id,

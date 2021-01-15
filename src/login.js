@@ -8,50 +8,16 @@ function sleep(x) {
 }
 
 class Login {
-  constructor(config, cookieJar) {
+  constructor(config, cookieJar, school_url) {
     this.config = config;
     this.cookieJar = cookieJar;
-    this.schools_list = [];
-    this.school_id = null;
-    this.school_info = null;
+    this.school_url = school_url;
     this.lt = null;
   }
 
-  async getSchoolsList() {
-    const res = await axios.get("https://static.campushoy.com/apicache/tenantListSort");
-    if (res.data["errCode"] !== 0) {
-      logger.error(`Can Not Get Schools List: ${res.data["errMsg"]}`);
-      return;
-    }
-    res.data["data"].forEach((section) => {
-      this.schools_list.push(...section["datas"]);
-    });
-  }
-
-  findSchoolId() {
-    const school = this.schools_list.find(
-      value => value.name === this.config["login_info"]["school_name"]);
-    if (!school) {
-      logger.error("您的学校名称错误或学校未加入今日校园，请核实信息！");
-      return;
-    }
-    this.school_id = school.id;
-  }
-
-  async getSchoolInfo() {
-    const res = await axios.get("https://mobile.campushoy.com/v6/config/guest/tenant/info", {
-      params: {ids: this.school_id}
-    });
-    if (res.data["errCode"] !== 0) {
-      logger.error(`Can Not Get Schools Info: ${res.data["errMsg"]}`);
-      return
-    }
-    this.school_info = res.data["data"][0];
-    this.ids_url = res.data["data"][0]["idsUrl"];
-  }
-
   async getLt() {
-    const res = await axios.get(this.ids_url + "/login", {
+    const res = await axios.get(this.school_url + "/iap/login", {
+      params: {service: this.school_url + "/portal/login"},
       headers: {
         "Accept": "application/json, text/plain, */*",
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) " +
@@ -69,7 +35,7 @@ class Login {
   }
 
   async getCaptcha() {
-    const res = await axios.get(this.ids_url + "/generateCaptcha", {
+    const res = await axios.get(this.school_url + "/ipa/generateCaptcha", {
       params: {ltId: this.lt},
       headers: {
         "Accept": "application/json, text/plain, */*",
@@ -110,7 +76,7 @@ class Login {
         rememberMe: false,
         lt: this.lt
       });
-      const {data} = await axios.post(this.ids_url + "/doLogin", body, {
+      const {data} = await axios.post(this.school_url + "/iap/doLogin", body, {
         headers: {
           "Accept": "application/json, text/plain, */*",
           "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) " +
@@ -128,6 +94,10 @@ class Login {
       need_captcha = data["needCaptcha"];
       if (result === "REDIRECT") {
         logger.info(`用户 ${username} 登录成功`);
+        await axios.get(data.url, {
+          jar: this.cookieJar,
+          withCredentials: true
+        });
         return true;
       }
       login_counter++;
@@ -152,15 +122,11 @@ class Login {
   }
 
   async login() {
+    logger.debug("Start Login...");
     this.fuckCaptcha = new FuckCaptcha(this.config.captcha.pd_id, this.config.captcha.pd_key);
-    logger.debug("Getting Schools List...");
-    await this.getSchoolsList();
-    logger.info(`Successfully Get ${this.schools_list.length} Schools`);
-    this.findSchoolId();
-    logger.info(`Your School ID is "${this.school_id}"`);
-    await this.getSchoolInfo();
     await this.getLt();
     await this.postLoginData();
+    logger.debug("Login finished");
   }
 }
 

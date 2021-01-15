@@ -1,6 +1,8 @@
 const fs = require("fs");
 const Logger = require("./logger.js");
 const Login = require("./login.js");
+const School = require("./school.js");
+const SubmitForm = require("./submit-form.js");
 
 global.logger = new Logger("warning");
 
@@ -25,9 +27,15 @@ class Main {
     this.load_config();
     logger.set_level(this.config["log_level"]);
     this.cookieJar = new (require('tough-cookie')).CookieJar();
-    this.login = new Login(this.config, this.cookieJar);
-    logger.debug("Start Login...")
-    await this.login.login()
+
+    this.school = new School(this.config);
+    this.school_url = await this.school.getSchoolUrl();
+
+    this.login = new Login(this.config, this.cookieJar, this.school_url);
+    await this.login.login();
+
+    this.submitForm = new SubmitForm(this.cookieJar, this.school_url);
+    await this.submitForm.checkAndPostForm();
   }
 
   run() {
