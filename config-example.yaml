@@ -1,0 +1,11 @@
+login_info:
+  school_name: # 学校名称
+  username: # 用户名
+  password: # 密码
+  retry_times: 5 # 登录重试次数
+
+captcha:
+  pd_id: # 请前往 http://www.fateadm.com 获取
+  pd_key: # 请前往 http://www.fateadm.com 获取
+
+log_level: info # 日志级别 debug/info/warning/error
