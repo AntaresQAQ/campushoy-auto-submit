@@ -38,8 +38,9 @@ class Logger {
   }
 
   print_log(msg, level) {
-    if(typeof msg !== "string") msg = inspect(msg);
+    if (typeof msg !== "string") msg = inspect(msg);
     msg = `[${moment().format("YYYY-MM-DD HH:mm:ss")}][${level.toUpperCase()}]: ${msg}`;
+    msg = msg.split('\n').join("")
     if (level === "debug") {
       msg = msg.white;
     } else if (level === "info") {

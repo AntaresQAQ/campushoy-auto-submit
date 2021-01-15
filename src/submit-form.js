@@ -29,7 +29,6 @@ class SubmitForm {
       jar: this.cookieJar,
       withCredentials: true
     });
-    console.log(res);
   }
 
   async checkAndPostForm() {

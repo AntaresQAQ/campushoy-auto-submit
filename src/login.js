@@ -16,6 +16,7 @@ class Login {
   }
 
   async getLt() {
+    logger.debug("Getting lt...");
     const res = await axios.get(this.school_url + "/iap/login", {
       params: {service: this.school_url + "/portal/login"},
       headers: {
@@ -32,9 +33,11 @@ class Login {
       withCredentials: true
     });
     this.lt = /_2lBepC=([^&]+)/g.exec(res.request.path)[1];
+    logger.debug(`Successfully Get lt=${this.lt}`);
   }
 
   async getCaptcha() {
+    logger.debug("Getting Captcha...");
     const res = await axios.get(this.school_url + "/ipa/generateCaptcha", {
       params: {ltId: this.lt},
       headers: {
@@ -90,14 +93,15 @@ class Login {
         jar: this.cookieJar,
         withCredentials: true
       });
+      logger.debug(data);
       const result = data["resultCode"];
       need_captcha = data["needCaptcha"];
       if (result === "REDIRECT") {
-        logger.info(`用户 ${username} 登录成功`);
         await axios.get(data.url, {
           jar: this.cookieJar,
           withCredentials: true
         });
+        logger.info(`用户 ${username} 登录成功`);
         return true;
       }
       login_counter++;
