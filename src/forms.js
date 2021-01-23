@@ -20,6 +20,7 @@ class Forms {
   }
 
   async getForms() {
+    logger.debug("Start Get Forms...");
     const headers = {
       "Accept": "application/json, text/plain, */*",
       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) " +
@@ -40,6 +41,7 @@ class Forms {
       withCredentials: true
     });
     const rows = res1.data["datas"]["rows"];
+    logger.debug(`Successfully Get ${rows.length} Forms`);
     const forms = [];
     for (const row of rows) {
       const collect_wid = row['wid'];
@@ -66,12 +68,15 @@ class Forms {
         withCredentials: true
       });
       const form = res3.data['datas']['rows'];
+      logger.debug(`Successfully get from ${title} ${form.length} fields`);
       forms.push({title, collect_wid, form_wid, school_task_wid, form});
     }
+    logger.debug("Get Forms Finished");
     return forms;
   }
 
   async generateConfig() {
+    logger.debug("Start Generate Config...");
     const forms = await this.getForms();
     const config = [];
     forms.forEach(value => {
@@ -122,10 +127,12 @@ class Forms {
         }
       });
     });
+    logger.debug("Generate Config Finished");
     return config;
   }
 
   async fillForms(config) {
+    logger.debug("Start Fill Forms...");
     if (typeof config !== "object") {
       logger.error("错误的配置文件格式");
       return null;
@@ -185,10 +192,12 @@ class Forms {
         }
       }
     }
+    logger.debug("Fill Forms Finished");
     return forms;
   }
 
   async submit(config, username) {
+    logger.debug("Start Submit Forms...");
     const results = [];
     const forms = await this.fillForms(config);
     for (const form of forms) {
@@ -226,6 +235,7 @@ class Forms {
           jar: this.cookieJar,
           withCredentials: true
         });
+        logger.debug(`Submit Result: ${res.data}`);
         const {message} = res.data;
         const result = {
           title: form.title,
@@ -240,6 +250,7 @@ class Forms {
         }
       }
     }
+    logger.debug("Submit Forms Finished");
     return results;
   }
 }

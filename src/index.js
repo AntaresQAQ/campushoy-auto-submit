@@ -35,6 +35,10 @@ class Main {
     const form_config_path = path.join(__dirname, "../forms.yaml");
     if (!fs.existsSync(form_config_path)) {
       const config = await this.forms.generateConfig();
+      if (!config.length) {
+        logger.error("您的今日校园内没有待填写的收集表，请等待收集表发布");
+        process.exit(-1);
+      }
       const config_file = yaml.dump(config);
       fs.writeFileSync(form_config_path, config_file);
       logger.warning("表单配置文件已生成，请完成 forms.yaml");

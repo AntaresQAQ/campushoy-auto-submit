@@ -136,7 +136,7 @@ class Login {
     }
     await this.getLt();
     const result = await this.postLoginData();
-    logger.debug("Login finished");
+    logger.debug("Login Finished");
     return result;
   }
 }
