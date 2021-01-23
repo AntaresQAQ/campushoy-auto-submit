@@ -7,6 +7,9 @@
   "author": "Antares <antares.oier@gmail.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
