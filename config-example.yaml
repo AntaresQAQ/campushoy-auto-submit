@@ -4,14 +4,14 @@ login_info:
   password: # 密码
   retry_times: 5 # 登录重试次数
 
-captcha:
+captcha: # 自动打码
   enable: false
   pd_id: # 请前往 http://www.fateadm.com 获取
   pd_key: # 请前往 http://www.fateadm.com 获取
 
-noticer:
+noticer: # Server酱推送
   enable: false
-  secret_key:
+  secret_key: # Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
 
-cron: 0 0 9 * * *
+cron: 0 0 9 * * * # 计划任务规则
 log_level: info # 日志级别 debug/info/warning/error
