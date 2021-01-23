@@ -128,47 +128,48 @@ class Forms {
   async fillForms(config) {
     if (typeof config !== "object") {
       logger.error("错误的配置文件格式");
-      return [];
+      return null;
     }
     const forms = await this.getForms();
-    config.forEach((config_form, index) => {
-      if (!forms[index]) return;
-      forms[index].enable = config_form.enable;
-      forms[index].address = config_form.address;
-      forms[index].position = config_form.position;
+    for (let i = 0; i < Math.min(forms.length, config.length); i++) {
+      const config_form = config[i];
+      forms[i].enable = config_form.enable;
+      forms[i].address = config_form.address;
+      forms[i].position = config_form.position;
       if (config_form.enable) {
-        const form = forms[index].form;
-        config_form.form.forEach((config_item, index1) => {
-          let form_item = form[index1];
+        const form = forms[i].form;
+        for (let j = 0; j < config_form.form.length; i++) {
+          const config_item = config_form.form[j];
+          const form_item = form[j];
           if (config_item.title !== form_item.title || config_item.type !== form_item["fieldType"]) {
-            logger.error(`配置文件 Form:${index} Fields:${index1} 有错误`);
-            process.exit(-1);
+            logger.error(`配置文件 Form:${i} Fields:${j} 有错误`);
+            return null;
           }
           const {type} = config_item;
           if (type === 2) {
             form_item.value = config_item.answer;
-            for (let i = 0; i < form_item['fieldItems'].length; i++) {
-              if (form_item['fieldItems'][i].content === config_item.answer) {
-                form_item['fieldItems'][i]["isSelected"] = 1;
+            for (let k = 0; k < form_item['fieldItems'].length; k++) {
+              if (form_item['fieldItems'][k].content === config_item.answer) {
+                form_item['fieldItems'][k]["isSelected"] = 1;
               } else {
-                form_item['fieldItems'].splice(i, 1);
-                i--;
+                form_item['fieldItems'].splice(k, 1);
+                k--;
               }
             }
           } else if (type === 3) {
             form_item.value = "";
-            for (let i = 0; i < form_item['fieldItems'].length; i++) {
+            for (let k = 0; k < form_item['fieldItems'].length; k++) {
               let flag = true;
               for (const answer_item of config_item.answer) {
-                if (form_item['fieldItems'][i].content === answer_item) {
+                if (form_item['fieldItems'][k].content === answer_item) {
                   flag = false;
-                  form_item['fieldItems'][i]["isSelected"] = 1;
+                  form_item['fieldItems'][k]["isSelected"] = 1;
                   form_item.value += `${answer_item} `;
                 }
               }
               if (flag) {
-                form_item['fieldItems'].splice(i, 1);
-                i--;
+                form_item['fieldItems'].splice(k, 1);
+                k--;
               }
             }
           } else if (type === 4) {
@@ -176,9 +177,9 @@ class Forms {
           } else {
             form_item.value = config_item.answer;
           }
-        });
+        }
       }
-    });
+    }
     return forms;
   }
 

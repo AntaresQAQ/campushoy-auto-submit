@@ -31,9 +31,9 @@ class Main {
   }
 
   async loadFormsConfig() {
+    if (!await this.login.login()) process.exit(-1);
     const form_config_path = path.join(__dirname, "../forms.yaml");
     if (!fs.existsSync(form_config_path)) {
-      if (!await this.login.login()) process.exit(-1);
       const config = await this.forms.generateConfig();
       const config_file = yaml.dump(config);
       fs.writeFileSync(form_config_path, config_file);
@@ -42,6 +42,10 @@ class Main {
     }
     const config = yaml.load(fs.readFileSync(form_config_path).toString());
     logger.info("加载表单配置文件成功");
+    if (!await this.forms.fillForms(config)) {
+      process.exit(-1);
+    }
+    logger.info("配置文件检查无误");
     return config;
   }
 
