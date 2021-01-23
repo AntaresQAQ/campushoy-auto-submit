@@ -138,6 +138,10 @@ class Forms {
       forms[i].position = config_form.position;
       if (config_form.enable) {
         const form = forms[i].form;
+        if (config_form.form.length !== form.length) {
+          logger.error(`配置文件 Form:${i} 缺少项`);
+          return null;
+        }
         for (let j = 0; j < config_form.form.length; i++) {
           const config_item = config_form.form[j];
           const form_item = form[j];
@@ -145,6 +149,7 @@ class Forms {
             logger.error(`配置文件 Form:${i} Fields:${j} 有错误`);
             return null;
           }
+          if (!config_item.required && !config_item.enable) continue;
           const {type} = config_item;
           if (type === 2) {
             form_item.value = config_item.answer;
