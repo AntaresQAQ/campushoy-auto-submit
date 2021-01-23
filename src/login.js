@@ -67,6 +67,10 @@ class Login {
       }
       let captcha = null;
       if (need_captcha) {
+        if (!this.config.captcha.enable) {
+          logger.error(`需要验证码，请前往 ${this.school_url} 输入验证码登录后重试`);
+          return false;
+        }
         const image = await this.getCaptcha();
         captcha = await this.fuckCaptcha.capreg(image.toString("base64"));
       }
@@ -127,10 +131,13 @@ class Login {
 
   async login() {
     logger.debug("Start Login...");
-    this.fuckCaptcha = new FuckCaptcha(this.config.captcha.pd_id, this.config.captcha.pd_key);
+    if (this.config.captcha.enable) {
+      this.fuckCaptcha = new FuckCaptcha(this.config.captcha.pd_id, this.config.captcha.pd_key);
+    }
     await this.getLt();
-    await this.postLoginData();
+    const result = await this.postLoginData();
     logger.debug("Login finished");
+    return result;
   }
 }
 
