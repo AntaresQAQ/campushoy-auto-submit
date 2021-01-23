@@ -43,7 +43,10 @@ cron: 0 0 9 * * * # 计划任务规则
 log_level: info # 日志级别 debug/info/warning/error
 ```
 
+如果不会填写cron规则，可以使用 <https://www.bejson.com/othertools/cron/> 来生成
+
 完成后，再次执行
+
 ```bash
 yarn start
 ```
