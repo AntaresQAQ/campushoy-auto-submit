@@ -16,7 +16,8 @@ class Main {
     const file_path = path.join(__dirname, "../config.yaml");
     if (!fs.existsSync(file_path)) {
       fs.copyFileSync(path.join(__dirname, "../config-example.yaml"), file_path);
-      logger.warning("新建配置文件 config.yaml");
+      logger.warning("配置文件已生成，请完成 config.yaml");
+      process.exit(0);
     }
     this.config = yaml.load(fs.readFileSync(file_path).toString());
     if (!this.config["login_info"]["school_name"] ||
