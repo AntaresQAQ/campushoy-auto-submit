@@ -11,9 +11,11 @@
     "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
     "colors": "^1.4.0",
+    "crypto-js": "^4.0.0",
     "js-yaml": "^4.0.0",
     "md5": "^2.3.0",
     "moment": "^2.29.1",
-    "tough-cookie": "^4.0.0"
+    "tough-cookie": "^4.0.0",
+    "uuid": "^8.3.2"
   }
 }
