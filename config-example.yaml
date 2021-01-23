@@ -5,7 +5,13 @@ login_info:
   retry_times: 5 # 登录重试次数
 
 captcha:
+  enable: false
   pd_id: # 请前往 http://www.fateadm.com 获取
   pd_key: # 请前往 http://www.fateadm.com 获取
 
+noticer:
+  enable: false
+  secret_key:
+
+cron: 0 0 9 * * *
 log_level: info # 日志级别 debug/info/warning/error
