@@ -46,10 +46,6 @@ class Main {
     }
     const config = yaml.load(fs.readFileSync(form_config_path).toString());
     logger.info("加载表单配置文件成功");
-    if (!await this.forms.fillForms(config)) {
-      process.exit(-1);
-    }
-    logger.info("配置文件检查无误");
     return config;
   }
 
