@@ -102,9 +102,7 @@ class Main {
 
   run() {
     this.init().then(() => {
-      this.job = schedule.scheduleJob(this.config["cron"], async () => {
-        await this.taskHandle(this);
-      });
+      this.job = schedule.scheduleJob(this.config["cron"], async () => await this.taskHandle(this));
       logger.info("下次表单提交时间：" +
         moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
     }).catch(e => logger.error(e));
