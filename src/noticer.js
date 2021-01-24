@@ -8,7 +8,7 @@ class Noticer {
   }
 
   async sendNoticer(title, content) {
-    if (!this.enable) return null
+    if (!this.enable) return null;
     const res = await axios.post(`https://sc.ftqq.com/${this.key}.send`, qs.stringify({
       text: title,
       desp: content

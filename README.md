@@ -24,22 +24,31 @@ yarn start
 
 编辑文件`config.yaml`，样例如下：
 ```yaml
-login_info:
-  school_name: xxxx大学 # 学校
-  username: 2019000000 # 用户名，一般为学号
-  password: ABC1234 # 登录密码
+login:
   retry_times: 5 # 登录重试次数
+
+users: #用户列表
+  - school_name: # 用户1 学校名称
+    username: # 用户1 用户名
+    password: # 用户1 密码
+    cron: 0 30 8 * * * # 用户1 计划任务规则
+    noticer: # 用户1 Server酱推送
+      enable: false
+      secret_key: # 用户1 Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
+
+  - school_name: # 用户2 学校名称
+    username: # 用户2 用户名
+    password: # 用户2 密码
+    cron: 0 0 9 * * * # 用户2 计划任务规则
+    noticer: # 用户2 Server酱推送
+      enable: false
+      secret_key: # 用户2 Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
 
 captcha: # 自动打码
   enable: false
   pd_id: # 请前往 http://www.fateadm.com 获取
   pd_key: # 请前往 http://www.fateadm.com 获取
 
-noticer: # Server酱推送
-  enable: false
-  secret_key: # Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
-
-cron: 0 0 9 * * * # 计划任务规则
 log_level: info # 日志级别 debug/info/warning/error
 ```
 
@@ -52,11 +61,9 @@ yarn start
 ```
 此时输出如下：
 ```
-[xxxx-xx-xx xx:xx:xx][WARNING]: 表单配置文件已生成，请完成 forms.yaml
+[xxxx-xx-xx xx:xx:xx][WARNING]: 表单配置文件已生成，请完成 <school_name>-<user_name>.yaml
 ```
-程序会根据你今日校园的信息收集表生成配置文件`forms.yaml`
-
-如果生成的文件为空列表，则可能还未到填表时间，请等待表单发布后，删除`forms.yaml`重新生成表单模板。
+程序会根据你今日校园的信息收集表在`forms`目录下生成对应每个用户的配置文件`<school_name>-<user_name>.yaml`
 
 生成的表单模板类似这样：
 ```yaml

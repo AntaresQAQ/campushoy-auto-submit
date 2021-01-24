@@ -17,8 +17,9 @@ function removeAllCookie(cookieJar) {
 }
 
 class Login {
-  constructor(config, cookieJar, school_url) {
+  constructor(config, user, cookieJar, school_url) {
     this.config = config;
+    this.user = user;
     this.cookieJar = cookieJar;
     this.school_url = school_url;
     this.lt = null;
@@ -67,7 +68,8 @@ class Login {
   }
 
   async postLoginData() {
-    const {username, password, retry_times} = this.config["login_info"];
+    const {retry_times} = this.config["login"];
+    const {username, password} = this.user;
     let login_counter = 0;
     let need_captcha = false;
     while (true) {

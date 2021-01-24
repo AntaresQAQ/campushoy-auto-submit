@@ -1,17 +1,26 @@
-login_info:
-  school_name: # 学校名称
-  username: # 用户名
-  password: # 密码
+login:
   retry_times: 5 # 登录重试次数
+
+users: #用户列表
+  - school_name: # 用户1 学校名称
+    username: # 用户1 用户名
+    password: # 用户1 密码
+    cron: 0 30 8 * * * # 用户1 计划任务规则
+    noticer: # 用户1 Server酱推送
+      enable: false
+      secret_key: # 用户1 Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
+
+  - school_name: # 用户2 学校名称
+    username: # 用户2 用户名
+    password: # 用户2 密码
+    cron: 0 0 9 * * * # 用户2 计划任务规则
+    noticer: # 用户2 Server酱推送
+      enable: false
+      secret_key: # 用户2 Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
 
 captcha: # 自动打码
   enable: false
   pd_id: # 请前往 http://www.fateadm.com 获取
   pd_key: # 请前往 http://www.fateadm.com 获取
 
-noticer: # Server酱推送
-  enable: false
-  secret_key: # Server酱密钥，请前往 http://sc.ftqq.com/ 注册并绑定微信后获取
-
-cron: 0 0 9 * * * # 计划任务规则
 log_level: info # 日志级别 debug/info/warning/error
