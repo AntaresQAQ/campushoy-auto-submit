@@ -17,10 +17,20 @@ class Main {
     }
     this.config = yaml.load(fs.readFileSync(file_path).toString());
     for (const user of this.config["users"]) {
-      if (!user["school_name"] || !user["username"] || !user["password"]) {
-        logger.error("请完成配置文件 config.yaml");
+      if (!user["school_name"] || !user["username"] || !user["password"] || !user["cron"]) {
+        logger.error("请检查配置文件 config.yaml 的必填项");
         process.exit(-1);
       }
+      if (user["noticer"]["enable"] && !user["noticer"]["secret_key"]) {
+        logger.error("请检查配置文件 config.yaml 的 [users].noticer.secret_key");
+        process.exit(-1);
+      }
+    }
+    if (this.config["captcha"]["enable"] && (
+      !this.config["captcha"]["pd_id"] || !this.config["captcha"]["pd_key"]
+    )) {
+      logger.error("请检查配置文件 config.yaml 的 captcha.pd_id 或 captcha.pd_key");
+      process.exit(-1);
     }
     logger.info("加载配置文件成功!");
   }
@@ -35,9 +45,7 @@ class Main {
   }
 
   run() {
-    this.init().then(() => {
-      this.tasks.forEach(task => task.start());
-    }).catch(logger.error);
+    this.init().then(() => this.tasks.forEach(task => task.start())).catch(logger.error);
   }
 }
 
