@@ -149,14 +149,18 @@ class Forms {
           logger.error(`配置文件 Form:${i} 缺少项`);
           return null;
         }
-        for (let j = 0; j < config_form.form.length; i++) {
-          const config_item = config_form.form[j];
-          const form_item = form[j];
+        for (let j1 = 0, j2 = 0; j1 < config_form.form.length; j1++, j2++) {
+          const config_item = config_form.form[j1];
+          const form_item = form[j2];
           if (config_item.title !== form_item.title || config_item.type !== form_item["fieldType"]) {
-            logger.error(`配置文件 Form:${i} Fields:${j} 有错误`);
+            logger.error(`配置文件 Form:${i} Fields:${j1} 有错误`);
             return null;
           }
-          if (!config_item.required && !config_item.enable) continue;
+          if (!config_item.required && !config_item.enable) {
+            form.splice(j2, 1);
+            j2--;
+            continue;
+          }
           const {type} = config_item;
           if (type === 2) {
             form_item.value = config_item.answer;

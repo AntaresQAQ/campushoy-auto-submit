@@ -7,6 +7,15 @@ function sleep(x) {
   return new Promise(resolve => setTimeout(resolve, x))
 }
 
+function removeAllCookie(cookieJar) {
+  return new Promise((resolve, reject) => {
+    cookieJar.removeAllCookies(err => {
+      if (err) reject(err);
+      resolve();
+    });
+  });
+}
+
 class Login {
   constructor(config, cookieJar, school_url) {
     this.config = config;
@@ -131,6 +140,7 @@ class Login {
 
   async login() {
     logger.debug("Start Login...");
+    await removeAllCookie(this.cookieJar);
     if (this.config.captcha.enable) {
       this.fuckCaptcha = new FuckCaptcha(this.config.captcha.pd_id, this.config.captcha.pd_key);
     }
