@@ -31,9 +31,9 @@ class Main {
   }
 
   async loadFormsConfig() {
-    if (!await this.login.login()) process.exit(-1);
     const form_config_path = path.join(__dirname, "../forms.yaml");
     if (!fs.existsSync(form_config_path)) {
+      if (!await this.login.login()) process.exit(-1);
       const config = await this.forms.generateConfig();
       if (!config.length) {
         logger.error("您的今日校园内没有待填写的收集表，请等待收集表发布");
