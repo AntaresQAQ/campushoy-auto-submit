@@ -49,11 +49,11 @@ class Main {
     return config;
   }
 
-  async taskHandle() {
+  async taskHandle(main) {
     logger.info("开始执行计划任务");
-    let result = await this.login.login();
+    let result = await main.login.login();
     if (!result) {
-      result = await this.noticer.sendNoticer("账号登录失败",
+      result = await main.noticer.sendNoticer("账号登录失败",
         "账号登录失败，本次提交任务终止，请检查服务器状态并及时提交");
       if (result) {
         if (result["errmsg"] === "success") {
@@ -64,15 +64,15 @@ class Main {
       }
       logger.info("登录失败，本次任务终止");
       logger.info("下次表单提交时间：" +
-        moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
+        moment(new Date(main.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
       return;
     }
-    const results = await this.forms.submit(this.forms_config, this.config["login_info"].username);
+    const results = await main.forms.submit(main.forms_config, main.config["login_info"].username);
     let content = "表单列表推送信息:\n\n";
     results.forEach(form => {
       content += `- ${form.title} ${form.succeed ? "成功" : "失败"} INFO:${form.message}\n`
     });
-    result = await this.noticer.sendNoticer("表单提交通知", content);
+    result = await main.noticer.sendNoticer("表单提交通知", content);
     if (result) {
       if (result["errmsg"] === "success") {
         logger.info(`Server酱消息推送成功`);
@@ -82,7 +82,7 @@ class Main {
     }
     logger.info("计划任务结束");
     logger.info("下次表单提交时间：" +
-      moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
+      moment(new Date(main.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
   }
 
   async init() {
@@ -102,11 +102,12 @@ class Main {
 
   run() {
     this.init().then(() => {
-      this.job = schedule.scheduleJob(this.config["cron"], this.taskHandle);
+      this.job = schedule.scheduleJob(this.config["cron"], async () => {
+        await this.taskHandle(this);
+      });
       logger.info("下次表单提交时间：" +
         moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
     }).catch(e => logger.error(e));
-
   }
 }
 
