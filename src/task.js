@@ -25,7 +25,8 @@ class Task {
       if (!await this.login.login()) process.exit(-1);
       const config = await this.forms.generateConfig();
       if (!config.length) {
-        logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} 的今日校园内没有待填写的收集表，请等待收集表发布`);
+        logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
+          `的今日校园内没有待填写的收集表，请等待收集表发布`);
         process.exit(-1);
       }
       const config_file = yaml.dump(config);
@@ -48,7 +49,8 @@ class Task {
         if (result["errmsg"] === "success") {
           logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
         } else {
-          logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送失败 msg=${result["errmsg"]}`);
+          logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
+            `Server酱消息推送失败 msg=${result["errmsg"]}`);
         }
       }
       logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败，本次任务终止`);
@@ -64,9 +66,10 @@ class Task {
     result = await task.noticer.sendNoticer("表单提交通知", content);
     if (result) {
       if (result["errmsg"] === "success") {
-        logger.info(`Server酱消息推送成功`);
+        logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
       } else {
-        logger.warning(`Server酱消息推送失败 msg=${result["errmsg"]}`);
+        logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
+          `Server酱消息推送失败 msg=${result["errmsg"]}`);
       }
     }
     logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 计划任务结束`);
