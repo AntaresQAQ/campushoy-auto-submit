@@ -48,7 +48,7 @@ class Main {
         logger.info(`用户 ${user["school_name"]} ${user["username"]} 初始化成功`);
         this.tasks.push(task);
       } else {
-        logger.info(`用户 ${user["school_name"]} ${user["username"]} 初始化失败，已忽略`);
+        logger.warning(`用户 ${user["school_name"]} ${user["username"]} 初始化失败，已忽略`);
       }
     }
   }
