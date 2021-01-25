@@ -58,7 +58,7 @@ class Task {
         moment(new Date(task.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
       return;
     }
-    const results = await task.forms.submit(task.forms_config, task.config["login_info"].username);
+    const results = await task.forms.submit(task.forms_config, this.user["username"]);
     let content = "表单列表推送信息:\n\n";
     results.forEach(form => {
       content += `- ${form.title} ${form.succeed ? "成功" : "失败"} INFO:${form.message}\n`
