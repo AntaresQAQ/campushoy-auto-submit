@@ -7,11 +7,10 @@ class Noticer {
     this.key = config["secret_key"];
   }
 
-  async sendNoticer(title, content) {
+  async sendNoticer(qq, msg) {
     if (!this.enable) return null;
-    const res = await axios.post(`https://sc.ftqq.com/${this.key}.send`, qs.stringify({
-      text: title,
-      desp: content
+    const res = await axios.post("https://qmsg.zendee.cn/send/" + this.key, qs.stringify({
+      qq, msg
     }));
     return res.data;
   }

@@ -5,13 +5,14 @@ const schedule = require('node-schedule');
 const moment = require("moment");
 const Login = require("./login.js");
 const Forms = require("./forms.js");
-const Noticer = require("./noticer.js");
+
 
 class Task {
-  constructor(config, user, school) {
+  constructor(config, user, school, noticer) {
     this.config = config;
     this.school = school;
     this.user = user;
+    this.noticer = noticer;
   }
 
   async loadFormsConfig() {
@@ -46,10 +47,10 @@ class Task {
     logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 开始执行计划任务`);
     let result = await task.login.login();
     if (!result) {
-      result = await task.noticer.sendNoticer("账号登录失败",
+      result = await task.noticer.sendNoticer(this.user.qq,
         `登录失败，本次提交任务终止，请检查服务器状态并及时提交`);
       if (result) {
-        if (result["errmsg"] === "success") {
+        if (result.success) {
           logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
         } else {
           logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
@@ -64,15 +65,15 @@ class Task {
     const results = await task.forms.submit(task.forms_config, this.user["username"]);
     let content = "表单列表推送信息:\n\n";
     results.forEach(form => {
-      content += `- ${form.title} ${form.succeed ? "成功" : "失败"} INFO:${form.message}\n`
+      content += `表单“${form.title}”提交${form.succeed ? "成功" : "失败"}，message=${form.message}\n\n`
     });
-    result = await task.noticer.sendNoticer("表单提交通知", content);
+    result = await task.noticer.sendNoticer(this.user.qq, content);
     if (result) {
-      if (result["errmsg"] === "success") {
+      if (result.success) {
         logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
       } else {
         logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
-          `Server酱消息推送失败 msg=${result["errmsg"]}`);
+          `Server酱消息推送失败 resaon=${result["reason"]}`);
       }
     }
     logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 计划任务结束`);
@@ -82,7 +83,6 @@ class Task {
 
   async init() {
     try {
-      this.noticer = new Noticer(this.user.noticer);
       this.cookieJar = new (require('tough-cookie')).CookieJar();
       this.school_url = await this.school.getSchoolUrl(this.user["school_name"]);
       this.login = new Login(this.config, this.user, this.cookieJar, this.school_url);
