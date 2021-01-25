@@ -41,11 +41,20 @@ class Main {
     logger.set_level(this.config["log_level"]);
     this.school = new School(this.config);
     await this.school.getSchoolsList();
-    this.tasks = this.config["users"].map(user => new Task(this.config, user, this.school));
+    this.tasks = [];
+    for (const user of this.config["users"]) {
+      const task = new Task(this.config, user, this.school)
+      if (await task.init()) {
+        logger.info(`用户 ${user["school_name"]} ${user["username"]} 初始化成功`);
+        this.tasks.push(task);
+      } else {
+        logger.info(`用户 ${user["school_name"]} ${user["username"]} 初始化失败，已忽略`);
+      }
+    }
   }
 
   run() {
-    this.init().then(() => this.tasks.forEach(task => task.start())).catch(logger.error);
+    this.init().then(() => this.tasks.forEach(task => task.start())).catch(e => logger.error(e));
   }
 }
 

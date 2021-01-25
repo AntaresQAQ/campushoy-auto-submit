@@ -22,21 +22,24 @@ class Task {
     const filename = `${this.user["school_name"]}-${this.user["username"]}.yaml`;
     const form_config_path = path.join(form_config_dir, filename);
     if (!fs.existsSync(form_config_path)) {
-      if (!await this.login.login()) process.exit(-1);
+      if (!await this.login.login()) {
+        logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败，无法获取收集表`);
+        return false;
+      }
       const config = await this.forms.generateConfig();
       if (!config.length) {
         logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
           `的今日校园内没有待填写的收集表，请等待收集表发布`);
-        process.exit(-1);
+        return false;
       }
       const config_file = yaml.dump(config);
       fs.writeFileSync(form_config_path, config_file);
       logger.warning(`表单配置文件已生成，请完成 ${filename}`);
-      process.exit(0);
+      return false;
     }
-    const config = yaml.load(fs.readFileSync(form_config_path).toString());
+    this.forms_config = yaml.load(fs.readFileSync(form_config_path).toString());
     logger.info(`加载表单配置文件 ${filename} 成功`);
-    return config;
+    return true;
   }
 
   async taskHandle(task) {
@@ -78,21 +81,24 @@ class Task {
   }
 
   async init() {
-    logger.info(`初始化用户 ${this.user["school_name"]} ${this.user["username"]}`);
-    this.noticer = new Noticer(this.user.noticer);
-    this.cookieJar = new (require('tough-cookie')).CookieJar();
-    this.school_url = await this.school.getSchoolUrl(this.user["school_name"]);
-    this.login = new Login(this.config, this.user, this.cookieJar, this.school_url);
-    this.forms = new Forms(this.cookieJar, this.school_url);
-    this.forms_config = await this.loadFormsConfig();
+    try {
+      this.noticer = new Noticer(this.user.noticer);
+      this.cookieJar = new (require('tough-cookie')).CookieJar();
+      this.school_url = await this.school.getSchoolUrl(this.user["school_name"]);
+      this.login = new Login(this.config, this.user, this.cookieJar, this.school_url);
+      this.forms = new Forms(this.cookieJar, this.school_url);
+    } catch (e) {
+      logger.error(e);
+      return false;
+    }
+    return await this.loadFormsConfig();
   }
 
   start() {
-    this.init().then(() => {
-      this.job = schedule.scheduleJob(this.user["cron"], async () => await this.taskHandle(this));
-      logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 下次表单提交时间：` +
-        moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
-    }).catch(e => logger.error(e));
+    this.job = schedule.scheduleJob(this.user["cron"],
+      () => this.taskHandle(this).catch(e => logger.error(e)));
+    logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 下次表单提交时间：` +
+      moment(new Date(this.job.nextInvocation())).format("YYYY-MM-DD HH:mm:ss"));
   }
 }
 

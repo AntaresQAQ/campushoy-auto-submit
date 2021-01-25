@@ -48,7 +48,7 @@ class Login {
 
   async getCaptcha() {
     logger.debug("Getting Captcha...");
-    const res = await axios.get(this.school_url + "/ipa/generateCaptcha", {
+    const res = await axios.get(this.school_url + "/iap/generateCaptcha", {
       params: {ltId: this.lt},
       headers: {
         "Accept": "application/json, text/plain, */*",
