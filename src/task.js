@@ -51,10 +51,10 @@ class Task {
         `登录失败，本次提交任务终止，请检查服务器状态并及时提交`);
       if (result) {
         if (result.success) {
-          logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
+          logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Qmsg酱消息推送成功`);
         } else {
           logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
-            `Server酱消息推送失败 msg=${result["errmsg"]}`);
+            `Qmsg酱消息推送失败 msg=${result["errmsg"]}`);
         }
       }
       logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败，本次任务终止`);
@@ -70,10 +70,10 @@ class Task {
     result = await task.noticer.sendNoticer(this.user.qq, content);
     if (result) {
       if (result.success) {
-        logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Server酱消息推送成功`);
+        logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Qmsg酱消息推送成功`);
       } else {
         logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
-          `Server酱消息推送失败 resaon=${result["reason"]}`);
+          `Qmsg酱消息推送失败 resaon=${result["reason"]}`);
       }
     }
     logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 计划任务结束`);
