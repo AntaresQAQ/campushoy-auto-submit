@@ -54,7 +54,7 @@ class Task {
           logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Qmsg酱消息推送成功`);
         } else {
           logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
-            `Qmsg酱消息推送失败 msg=${result["errmsg"]}`);
+            `Qmsg酱消息推送失败 reason=${result["reason"]}`);
         }
       }
       logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败，本次任务终止`);
@@ -63,9 +63,9 @@ class Task {
       return;
     }
     const results = await task.forms.submit(task.forms_config, this.user["username"]);
-    let content = "表单列表推送信息:\n\n";
+    let content = "表单列表推送信息:";
     results.forEach(form => {
-      content += `表单“${form.title}”提交${form.succeed ? "成功" : "失败"}，message=${form.message}\n\n`
+      content += `\n\n表单“${form.title}”提交${form.succeed ? "成功" : "失败"}，message=${form.message}`
     });
     result = await task.noticer.sendNoticer(this.user.qq, content);
     if (result) {
@@ -73,7 +73,7 @@ class Task {
         logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} Qmsg酱消息推送成功`);
       } else {
         logger.warning(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
-          `Qmsg酱消息推送失败 resaon=${result["reason"]}`);
+          `Qmsg酱消息推送失败 reason=${result["reason"]}`);
       }
     }
     logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 计划任务结束`);
