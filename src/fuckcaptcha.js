@@ -1,6 +1,6 @@
-const md5 = require("md5");
 const qs = require("querystring");
 const axios = require("axios");
+const CryptoJS = require("crypto-js");
 
 class FuckCaptcha {
   constructor(pd_id, pd_key) {
@@ -9,7 +9,9 @@ class FuckCaptcha {
   }
 
   calcSign(timestamp) {
-    return md5(`${this.pd_id}${timestamp}${md5(`${timestamp}${this.pd_key}`)}`);
+    return CryptoJS.MD5(
+      `${this.pd_id}${timestamp}${CryptoJS.MD5(
+        `${timestamp}${this.pd_key}`).toString()}`).toString();
   }
 
   async capreg(image) {
