@@ -23,10 +23,6 @@ class Task {
     const filename = `${this.user["school_name"]}-${this.user["username"]}.yaml`;
     const form_config_path = path.join(form_config_dir, filename);
     if (!fs.existsSync(form_config_path)) {
-      if (!await this.login.login()) {
-        logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败，无法获取收集表`);
-        return false;
-      }
       const config = await this.forms.generateConfig();
       if (!config.length) {
         logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} ` +
@@ -87,11 +83,17 @@ class Task {
       this.school_url = await this.school.getSchoolUrl(this.user["school_name"]);
       this.login = new Login(this.config, this.user, this.cookieJar, this.school_url);
       this.forms = new Forms(this.cookieJar, this.school_url);
+      if (await this.login.login()) {
+        logger.info(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录成功`);
+      } else {
+        logger.error(`用户 ${this.user["school_name"]} ${this.user["username"]} 登录失败`);
+        return false;
+      }
+      return await this.loadFormsConfig();
     } catch (e) {
       logger.error(e);
       return false;
     }
-    return await this.loadFormsConfig();
   }
 
   start() {

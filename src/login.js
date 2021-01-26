@@ -116,7 +116,6 @@ class Login {
           jar: this.cookieJar,
           withCredentials: true
         });
-        logger.info(`用户 ${username} 登录成功`);
         return true;
       }
       login_counter++;
@@ -133,7 +132,6 @@ class Login {
         logger.warning("未知错误，请检查账户是否可用");
       }
       if (login_counter > retry_times) {
-        logger.error(`用户 ${username} 登录失败`);
         return false;
       }
       await sleep(1000);
